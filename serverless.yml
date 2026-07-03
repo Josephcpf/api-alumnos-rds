@@ -1,4 +1,4 @@
-org: geraldocolchado
+org: josephcaba
 service: api-alumnos-rds
 
 provider:
@@ -7,7 +7,7 @@ provider:
   memorySize: 1024
   timeout: 20
   iam:
-    role: arn:aws:iam::339712924490:role/LabRole
+    role: arn:aws:iam::944585571319:role/LabRole
   environment:
     DB_HOST: /rds_mysql_alumnos/punto_enlace
     DB_USER: user_${sls:stage}
