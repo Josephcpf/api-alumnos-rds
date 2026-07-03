@@ -15,15 +15,21 @@ provider:
     DB_USER: user_${sls:stage}
     DB_PASSWORD: ${ssm:/rds_mysql_alumnos/user_${sls:stage}/password}
 
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux   # Use this on Mac/Windows. Remove if deploying from Linux
+    # layer: true             # Uncomment if you prefer a Lambda Layer
+
 functions:
   listar:
     handler: ListarAlumnos.lambda_handler
     package:
-      include:
-        - ./** 
+      individually: true      # Better practice
     events:
       - http:
           path: /alumnos/listar
           method: get
           cors: true
-          integration: lambda
