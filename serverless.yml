@@ -3,7 +3,7 @@ service: api-alumnos-rds
 
 provider:
   name: aws
-  runtime: python3.13
+  runtime: python3.12
   memorySize: 1024
   timeout: 20
   iam:
