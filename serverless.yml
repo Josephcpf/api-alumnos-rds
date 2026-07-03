@@ -8,18 +8,19 @@ provider:
   timeout: 20
   iam:
     role: arn:aws:iam::944585571319:role/LabRole
+  stage: ${opt:stage, 'dev'}     # Por defecto usa dev
   environment:
-    DB_HOST: /rds_mysql_alumnos/punto_enlace
-    DB_USER: user_${sls:stage}
-    DB_PASSWORD: /rds_mysql_alumnos/user_${sls:stage}/password
+    DB_HOST: ${ssm:/rds_mysql_alumnos/punto_enlace~true}
     DB_NAME: ${sls:stage}
+    DB_USER: user_${sls:stage}
+    DB_PASSWORD: ${ssm:/rds_mysql_alumnos/user_${sls:stage}/password~true}
 
 functions:
   listar:
     handler: ListarAlumnos.lambda_handler
     package:
       include:
-        - ./**  # Incluir todo el contenido del directorio
+        - ./** 
     events:
       - http:
           path: /alumnos/listar
