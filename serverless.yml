@@ -8,12 +8,12 @@ provider:
   timeout: 20
   iam:
     role: arn:aws:iam::944585571319:role/LabRole
-  stage: ${opt:stage, 'dev'}     # Por defecto usa dev
+  stage: ${opt:stage, 'dev'}
   environment:
-    DB_HOST: ${ssm:/rds_mysql_alumnos/punto_enlace~true}
+    DB_HOST: ${ssm:/rds_mysql_alumnos/punto_enlace}
     DB_NAME: ${sls:stage}
     DB_USER: user_${sls:stage}
-    DB_PASSWORD: ${ssm:/rds_mysql_alumnos/user_${sls:stage}/password~true}
+    DB_PASSWORD: ${ssm:/rds_mysql_alumnos/user_${sls:stage}/password}
 
 functions:
   listar:
