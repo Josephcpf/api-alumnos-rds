@@ -1,26 +1,27 @@
 import boto3
 import pymysql
 import os
+import json
 
 def lambda_handler(event, context):
-    # Parámetros de conexión (puedes usar Parameter Store o Secrets Manager para mayor seguridad)
-    SSM_host = os.environ['DB_HOST']
+    connection = None
+
+    # Variables de entorno
+    secret_name = os.environ['DB_SECRET_NAME']
     user = os.environ['DB_USER']
-    SSM_password = os.environ['DB_PASSWORD']
     database = os.environ['DB_NAME']
 
-    # Recuperar los secretos
-    ssm = boto3.client('ssm')
-    response = ssm.get_parameter(
-        Name=SSM_host,
-        WithDecryption=True  # Si es un parámetro seguro
+    # Recuperar secreto desde AWS Secrets Manager
+    secrets_client = boto3.client('secretsmanager')
+
+    response = secrets_client.get_secret_value(
+        SecretId=secret_name
     )
-    host = response['Parameter']['Value']
-    response = ssm.get_parameter(
-        Name=SSM_password,
-        WithDecryption=True  # Si es un parámetro seguro
-    )
-    password = response['Parameter']['Value']
+
+    secret = json.loads(response['SecretString'])
+
+    host = secret['host']
+    password = secret['password']
 
     try:
         connection = pymysql.connect(
@@ -32,12 +33,12 @@ def lambda_handler(event, context):
         )
 
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM alumnos;")  # Ajusta el nombre de la tabla según tu caso
+            cursor.execute("SELECT * FROM alumnos;")
             results = cursor.fetchall()
 
         return {
             "statusCode": 200,
-            "body": results
+            "body": str(results)
         }
 
     except Exception as e:
