@@ -3,33 +3,26 @@ service: api-alumnos-rds
 
 provider:
   name: aws
-  runtime: python3.12
+  runtime: python3.13
   memorySize: 1024
   timeout: 20
   iam:
     role: arn:aws:iam::944585571319:role/LabRole
-  stage: ${opt:stage, 'dev'}
   environment:
-    DB_HOST: ${ssm:/rds_mysql_alumnos/punto_enlace}
-    DB_NAME: ${sls:stage}
+    DB_HOST: /rds_mysql_alumnos/punto_enlace
     DB_USER: user_${sls:stage}
-    DB_PASSWORD: ${ssm:/rds_mysql_alumnos/user_${sls:stage}/password}
-
-plugins:
-  - serverless-python-requirements
-
-custom:
-  pythonRequirements:
-    dockerizePip: non-linux   # Use this on Mac/Windows. Remove if deploying from Linux
-    # layer: true             # Uncomment if you prefer a Lambda Layer
+    DB_PASSWORD: /rds_mysql_alumnos/user_${sls:stage}/password
+    DB_NAME: ${sls:stage}
 
 functions:
   listar:
     handler: ListarAlumnos.lambda_handler
     package:
-      individually: true      # Better practice
+      include:
+        - ./**  # Incluir todo el contenido del directorio
     events:
       - http:
           path: /alumnos/listar
           method: get
           cors: true
+          integration: lambda
