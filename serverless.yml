@@ -25,3 +25,17 @@ functions:
           method: get
           cors: true
           integration: lambda
+
+  rotarPasswords:
+    handler: RotarPasswords.lambda_handler
+    package:
+      include:
+        - ./**
+    environment:
+      DB_HOST_PARAM: /rds_mysql_alumnos/punto_enlace
+      DB_ADMIN_USER: admin
+      DB_ADMIN_PASSWORD_PARAM: /rds_mysql_alumnos/admin/password
+    events:
+      - schedule:
+          rate: rate(10 minutes)
+          enabled: true
