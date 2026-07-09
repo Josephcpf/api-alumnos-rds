@@ -9,9 +9,8 @@ provider:
   iam:
     role: arn:aws:iam::944585571319:role/LabRole
   environment:
-    DB_HOST: /rds_mysql_alumnos/punto_enlace
+    DB_SECRET_NAME: rds_mysql_alumnos/user_${sls:stage}
     DB_USER: user_${sls:stage}
-    DB_PASSWORD: /rds_mysql_alumnos/user_${sls:stage}/password
     DB_NAME: ${sls:stage}
 
 functions:
@@ -19,7 +18,7 @@ functions:
     handler: ListarAlumnos.lambda_handler
     package:
       include:
-        - ./**  # Incluir todo el contenido del directorio
+        - ./**
     events:
       - http:
           path: /alumnos/listar
